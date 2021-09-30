@@ -10,21 +10,20 @@
 - Перевірено за допомогою `curl`:
     ```bash
     $ curl -v -XGET http://localhost:5000/api/v1/hello-world-15
-StatusCode        : 200
-StatusDescription : OK
-Content           : <h1>Hello  15!</h1>
-RawContent        : HTTP/1.0 200 OK
-                    Content-Length: 19
-                    Content-Type: text/html; charset=utf-8
-                    Date: Thu, 30 Sep 2021 20:24:03 GMT
-                    Server: Werkzeug/2.0.1 Python/3.8.11
-
-                    <h1>Hello  15!</h1>
-Forms             : {}
-Headers           : {[Content-Length, 19], [Content-Type, text/html; charset=utf-8], [Date, Thu, 30 Sep 20
-                    21 20:24:03 GMT], [Server, Werkzeug/2.0.1 Python/3.8.11]}
-Images            : {}
-InputFields       : {}
-Links             : {}
-ParsedHtml        : mshtml.HTMLDocumentClass
-RawContentLength  : 19
+    *   Trying 127.0.0.1:5000...
+    * TCP_NODELAY set
+    * Connected to localhost (127.0.0.1) port 5000 (#0)
+    > GET /api/v1/hello-world-15 HTTP/1.1
+    > Host: localhost:5000
+    > User-Agent: curl/7.68.0
+    > Accept: */*
+    > 
+    * Mark bundle as not supporting multiuse
+    < HTTP/1.1 200 OK
+    < Date: Tue, 28 Sep 2021 18:34:36 GMT
+    < Connection: close
+    < Content-Type: text/html; charset=utf-8
+    < Content-Length: 19
+    < 
+    * Closing connection 0
+    ```
