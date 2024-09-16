@@ -1,0 +1,578 @@
+openapi: 3.0.0
+info:
+  version: 3.0.0
+  title: Лабораторна робота №5. Варіант 15
+  description: 'Написати сервіс для роботи аптеки. Провізор може додавати препарати в базу, видаляти, редагувати інформацію про них. Користувач може переглядати інформацію про препарати, здійснювати купівлю, якщо немає препарату в наявності, то його можна додати в попит.'
+  contact:
+    email: bohdan.kuno.knm.2020@lpnu.ua
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://127.0.0.0:5000/api/v15 
+tags:
+- name: medicament
+  description: Operations about list of drugs
+- name: purchase
+  description: Operations about purchases
+- name: demand
+  description: Operation about demands
+- name: user
+  description: Operations with users
+
+
+paths:
+  /medicaments:
+    get:
+      tags:
+      - medicament
+      summary: Get list of drugs
+      description: There will be all medicaments
+      operationId: getMedicaments
+      responses:
+        200:
+          description: "Success. Return list of all medicaments"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/Medicament'
+        401:
+          description: "Invalid input"         
+      security:
+        - blog_auth:
+          - admin
+
+
+  /medicament:
+    post:
+      tags:
+      - medicament
+      summary: Add unexisted medicament
+      operationId: addMedicament
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Medicament'
+      responses:
+        200:
+          description: "Success. Medicament is added"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medicament'
+        401:
+          description: "Invalid input"      
+      security:
+        - blog_auth:
+          - admin
+
+
+  /medicament/{medicamentId}: 
+    get:
+      tags:
+      - medicament
+      summary: Get drug by id
+      operationId: getDrugById
+      parameters:
+      - name: medicamentId
+        in: path
+        required: true
+        description: 'Type medicament id to get it'
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: "Success. Your medicament:"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medicament'
+        401:
+          description: "Invalid input"           
+        404:
+          description: A medicament with this ID does not exist.
+      security:
+        - blog_auth:
+          - admin
+
+    delete:
+      tags:
+      - medicament
+      summary: Delete drug
+      description: Deleting medicament from list by id
+      operationId: deleteMedicament
+      parameters:
+      - name: medicamentId
+        in: path
+        required: true
+        description: 'Medicament id to delete:'
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description:  "Success! Medicament deleted"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medicament'
+        401:
+          description: "Invalid input" 
+        404:
+          description: Medicament doesn`t exist.
+      security:
+        - blog_auth:
+          - admin
+
+
+    put:
+      tags:
+      - medicament
+      summary: Update drug info
+      operationId: updateMedicament
+      parameters:
+      - name: medicamentId
+        in: path
+        required: true
+        description: 'Medicament id to update:'
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: 'Updated medicament object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Medicament'
+        required: true
+      responses:
+        200:
+          description:  "Success! Medicament updated"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medicament'
+        401:
+          description: "Invalid input" 
+        404:
+          description: Medicament doesn`t exist.
+      security:
+        - blog_auth:
+          - admin
+
+
+  /purchase:
+    post:
+      tags:
+      - purchase
+      summary: Add new purchase order
+      operationId: addPurchase
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Purchase'
+      responses:
+        200:
+          description: "Success! Purchase order is added"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Purchase'
+        401:
+          description: "Invalid input"     
+      security: []
+
+
+  /purchase/{purchaseId}:
+    get:
+      tags:
+      - purchase
+      summary: Get purchase order by id
+      operationId: getPurchaseById
+      parameters:
+      - name: purchaseId
+        in: path
+        required: true
+        description: 'Type purchase order ID to get it:'
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: "Success! Your purchase order:"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Purchase'
+        401:
+          description: "Invalid input"          
+        404:
+          description: A purchase order with this ID does not exist.
+      security: []
+
+
+    delete:
+      tags:
+      - purchase
+      summary: Delete the purchase order
+      description: Deleting purchase order from list by id.
+      operationId: deletePurchase
+      parameters:
+      - name: purchaseId
+        in: path
+        required: true
+        description: 'Purchase order ID to delete'
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description:  "Success! Purchase order deleted"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Purchase'
+        401:
+          description: "Invalid input" 
+        404:
+          description: Purchase order doesn`t exist.
+      security: []
+
+
+  /demand:
+    post:
+      tags:
+      - demand
+      summary: Add missing drug to demand
+      operationId: addDemand
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Demand'
+      responses:
+        200:
+          description: "Success! Your drug is added to demand"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Purchase'
+        401:
+          description: "Invalid input"    
+      security: []
+      
+
+  /demand/{missingDrugId}:
+    get:
+      tags:
+      - demand
+      summary: Get drug in demand by id
+      operationId: getDemandId
+      parameters:
+      - name: missingDrugId
+        in: path
+        required: true
+        description: 'Type missing drug ID to get it:'
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: "Success! Your drug in demand:"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Demand'
+        401:
+          description: "Invalid input"        
+        404:
+          description: A missing drug with this ID does not exist.
+      security:
+        - blog_auth:
+          - admin
+
+
+    delete:
+      tags:
+      - demand
+      summary: Delete drug from demand list
+      description: Deleting drug from demand list by id.
+      operationId: deleteDemand
+      parameters:
+      - name: missingDrugId
+        in: path
+        required: true
+        description: 'Missing drug ID to delete'
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description:  "Success! Drug deleted from demand"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Demand'
+        401:
+          description: "Invalid input" 
+        404:
+          description: Drug doesn`t exist in demand.
+      security:
+        - blog_auth:
+          - admin
+
+
+  /user:
+    post:
+      tags:
+      - user
+      summary: Add new user
+      description: During registration
+      operationId: addUser
+      requestBody:
+        description: Created user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        default:
+          description: Success!
+          content: {}
+
+  /user/login:
+    get:
+      tags:
+      - user
+      summary: Log user into system
+      operationId: loginUser
+      parameters:
+      - name: username
+        in: query
+        description: Type your user name
+        required: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: Type your password
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success!
+          content:
+            application/json:
+              schema:
+                type: string
+        400:
+          description: Invalid username or password
+
+          
+  /user/logout:
+    get:
+      tags:
+      - user
+      summary: Log out already logged in user
+      operationId: logoutUser
+      responses:
+        default:
+          description: Success!
+          
+  /user/{username}:
+    get:
+      tags:
+      - user
+      summary: Get user by user name
+      operationId: getUserByName
+      parameters:
+      - name: username
+        in: path
+        description: 'The name that needs to be fetched.'
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid username supplied
+        404:
+          description: User not found
+    put:
+      tags:
+      - user
+      summary: Update user
+      description: Only for registered users.
+      operationId: updateUser
+      parameters:
+      - name: username
+        in: path
+        description: Name needed to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        200:
+          description: Success!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid user supplied
+        404:
+          description: User doesn`t exist
+      security:
+        - blog_auth:
+          - user
+    delete:
+      tags:
+      - user
+      summary: Delete user
+      description: Only for registered users.
+      operationId: deleteUser
+      parameters:
+      - name: username
+        in: path
+        description: Name needed to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Success!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User doesn`t exist
+          content: {}
+      security:
+        - blog_auth:
+          - user
+
+
+components:
+  schemas:
+    Medicament:
+      required:
+      - id
+      - name
+      - function
+      - price
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Paracetamol
+        function:
+          type: string
+          example: High temperature
+        price:
+          type: string
+          example: 10$
+        status:
+          type: string
+          description: status of this medicament
+          enum:
+          - available
+          - not available
+
+    Purchase:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        userId:
+          type: integer
+          format: int64
+          example: 3
+        medicamentId:
+          type: integer
+          format: int64
+          example: 12
+        date:
+          type: string
+          format: date-time
+          example: 2021-10-15 10:40
+          
+    Demand:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        userId:
+          type: integer
+          format: int64
+          example: 5
+        drugName:
+          type: string
+          example: Nurofen
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userRole:
+          type: string
+          description: role of user
+          enum:
+          - user
+          - admin
+
+
+
+  securitySchemes:
+    blog_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://swagger.io/oauth/dialog
+          scopes:
+            user: read, buy and add to demand
+            admin: add, delete and update list of medicaments 
